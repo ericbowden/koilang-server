@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 
 import spacy
@@ -38,13 +38,20 @@ def process_text():
 
     return response
 
+# Serve Client
+@app.route('/dist/<path:path>')
+def send_dist(path):
+    return send_from_directory('dist', path)
+
+@app.route("/")
+def index():
+    return send_from_directory("dist", "index.html")
+
 if __name__ == '__main__':
     # Run the server
-    port = 8080
-
     if args.dev:
-        app.run(debug=True, port=port)
+        app.run(debug=True, port=8080)
     else:
-        print('Starting server on http://localhost:' + str(port))
+        print('Starting server on http://localhost')
         from waitress import serve
-        serve(app, host="0.0.0.0", port=port)
+        serve(app, host="0.0.0.0", port=80)

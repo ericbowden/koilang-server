@@ -26,7 +26,7 @@ function FormComponent() {
     },
     onSubmit: (values) => {
       void axios
-        .post("http://localhost:8080/process", {
+        .post("/process", {
           text: values["form-text"],
         })
         .then((res: AxiosResponse<ParsedResponse>) => {

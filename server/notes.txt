@@ -1,7 +1,7 @@
 # Run these commands to get the server dependencies installed
 python3 -m venv server/.venv
 source server/.venv/bin/activate
-pip install flask flask-socketio spacy waitress
+pip install flask spacy waitress flask_cors
 python3 -m spacy download en_core_web_sm
 
 # Start server
