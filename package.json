@@ -1,18 +1,25 @@
 {
   "name": "koilang-project",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
+    "clean": "rm -rf build server/dist",
     "dev": "vite",
+    "dev-debug": "vite --debug",
     "build": "tsc -b && vite build",
     "server": "source server/.venv/bin/activate && python3 server/server.py",
+    "server-background": "sudo nohup npm run server & && disown",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prepublishOnly": "npm run clean && npm run build && npm run lint && npm run test-with-coverage",
+    "test": "vitest run",
+    "test-with-coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.13.0",
+    "@mui/icons-material": "^5.16.7",
     "@mui/material": "^5.16.7",
     "axios": "^1.7.4",
     "formik": "^2.4.6",

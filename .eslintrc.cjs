@@ -30,5 +30,11 @@ module.exports = {
       { allowConstantExport: true },
     ],
     "prettier/prettier": "warn",
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": ["@mui/*/*/*"]
+      }
+    ]
   },
 };
