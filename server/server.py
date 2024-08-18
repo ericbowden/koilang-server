@@ -1,5 +1,4 @@
 from flask import Flask, request, jsonify, send_from_directory
-from flask_cors import CORS
 
 import spacy
 from spacy import displacy
@@ -8,11 +7,11 @@ import argparse
 # Process args
 parser = argparse.ArgumentParser()
 parser.add_argument('-d', '--dev', action='store_true')
+parser.add_argument('-p', '--port')
 args = parser.parse_args()
 
 # Initialize Flask app and CORS
 app = Flask(__name__)
-CORS(app)
 
 # Load spaCy model
 nlp = spacy.load('en_core_web_sm')
@@ -39,7 +38,7 @@ def process_text():
     return response
 
 # Serve Client
-@app.route('/dist/<path:path>')
+@app.route('/<path:path>')
 def send_dist(path):
     return send_from_directory('dist', path)
 
@@ -48,10 +47,15 @@ def index():
     return send_from_directory("dist", "index.html")
 
 if __name__ == '__main__':
+
+    port = 8080
+    if args.port != None:
+        port = args.port
+
     # Run the server
     if args.dev:
-        app.run(debug=True, port=8080)
+        app.run(debug=True, port=port)
     else:
-        print('Starting server on http://localhost')
+        print('Starting server on http://localhost:'+str(port))
         from waitress import serve
-        serve(app, host="0.0.0.0", port=80)
+        serve(app, host="0.0.0.0", port=port)
