@@ -1,3 +1,5 @@
+/// <reference types="vitest" />
+
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 
@@ -16,6 +18,13 @@ export default defineConfig({
       // port python server is running locally
       "/process": "http://localhost:8080",
     },
+  },
+
+  // https://vitest.dev/config/
+  test: {
+    setupFiles: "./test/setupTest.tsx",
+    globals: true,
+    environment: "happy-dom",
   },
 
   plugins: [react()],

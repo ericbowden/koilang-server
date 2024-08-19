@@ -21,7 +21,10 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+
+    // needed for vitest globals like describe
+    "types": ["vitest/globals"],
   },
-  "include": ["src"]
+  "include": ["src", "test"]
 }
