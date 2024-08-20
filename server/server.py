@@ -33,7 +33,11 @@ def process_text():
     deps_parse = displacy.parse_deps(doc)
     deps_html = displacy.render(deps_parse, style="dep", manual=True)
 
-    response = jsonify({'parsed': deps_parse, 'html': deps_html})
+    response = jsonify({
+        'parsed': {
+            'arcs': deps_parse['arcs'],
+            'words': [{"text": token.text, "lemma": token.lemma_, "tag": token.pos_} for token in doc]},
+        'html': deps_html})
 
     return response
 

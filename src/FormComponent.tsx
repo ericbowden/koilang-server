@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import axios, { AxiosResponse } from "axios";
 import { useFormik } from "formik";
 import { useAppStateContext } from "./state";
+import { ParsedResponse } from "./types";
 
 interface FormType {
   "form-text"?: string;

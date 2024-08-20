@@ -4,6 +4,7 @@ import FormComponent from "./FormComponent";
 import DisplayComponent from "./DisplayComponent";
 import { useState } from "react";
 import { AppStateContext } from "./state";
+import { AppStateType } from "./types";
 
 const theme = createTheme();
 
