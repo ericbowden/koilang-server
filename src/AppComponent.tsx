@@ -35,7 +35,7 @@ function AppComponent() {
         }}
       >
         <NavComponent />
-        <Container sx={{ marginTop: 2, minHeight: "100vh" }}>
+        <Container sx={{ marginTop: 2 }}>
           <FormComponent />
           <DisplayComponent />
         </Container>

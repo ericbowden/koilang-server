@@ -23,14 +23,15 @@ const FocusedTags = posTagKeys;
 
 function getDefinitions(word: ArrayElement<ParsedResponse["parsed"]["words"]>) {
   const style = {
-    border: "1px solid grey",
-    borderRadius: 1,
+    border: 1,
+    borderColor: "secondary.main",
+    borderRadius: 2,
     p: 2,
     m: 2,
   };
   const definitions = findMeaning(word.lemma, word.tag).map((found, j) => (
     <Box key={j} sx={style}>
-      <b>Koilang Word: {found.Word}</b> ({found.Pronunciation})
+      <b>Koilang Word: {found.Word}</b> (/{found.Pronunciation}/)
       <div>
         Meaning: ({found.splitPOS.join(", ")}) {found.Meaning}
       </div>
@@ -60,7 +61,13 @@ export default function DefinitionsComponent() {
           return (
             <Box
               key={i}
-              sx={{ border: "1px solid black", borderRadius: 1, m: 2, p: 2 }}
+              sx={{
+                border: 1,
+                borderColor: "primary.main",
+                borderRadius: 2,
+                marginBottom: 2,
+                p: 2,
+              }}
             >
               {word.lemma} ({word.tag}){getDefinitions(word)}
             </Box>

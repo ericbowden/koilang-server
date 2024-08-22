@@ -2,6 +2,7 @@ import { Box, Tab, Tabs } from "@mui/material";
 import { useAppStateContext } from "./state";
 import React from "react";
 import DefinitionsComponent from "./DefinitionComponent";
+import SVGComponent from "./SVGComponent";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -44,14 +45,12 @@ function DisplayComponent() {
         <Tab label="Translation" />
         <Tab label="Dependency Graph" />
       </Tabs>
-      <Box sx={{ p: 3 }}>
+      <Box sx={{ marginTop: 2 }}>
         <TabPanel value={value} index={0}>
           <DefinitionsComponent />
         </TabPanel>
         <TabPanel value={value} index={1}>
-          <Box sx={{ overflowX: "scroll" }}>
-            <div dangerouslySetInnerHTML={{ __html: response.html }}></div>
-          </Box>
+          <SVGComponent />
         </TabPanel>
       </Box>
     </>

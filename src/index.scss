@@ -1,0 +1,10 @@
+body {
+    margin: 0;
+}
+
+// svg minimap doesn't work with how we replace svgs dynamically so we remove it
+.svg-display {
+    [role='navigation'] {
+        display: none;
+    }
+}

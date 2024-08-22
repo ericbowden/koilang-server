@@ -39,8 +39,8 @@ function NavComponent() {
           <Box
             component="img"
             sx={{
-              height: 50,
-              width: 50,
+              height: 64,
+              width: 64,
             }}
             src={koi}
           />
@@ -104,6 +104,7 @@ function NavComponent() {
                   boxSizing: "border-box",
                   width: drawerWidth,
                 },
+                display: { xs: "block", sm: "none" },
               }}
             >
               <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
