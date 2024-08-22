@@ -30,7 +30,7 @@ interface TableEntry {
 
 export interface Definition extends TableEntry {
   splitMeaning: string[];
-  splitPOS: string[];
+  splitPOS: POSTagsKeyType[];
 }
 
 const dictByPOSMap = Object.fromEntries(
@@ -73,7 +73,8 @@ function convertDictToJSONArray(input: string) {
 
     // split POS on ';' and convert to official POS
     entry.splitPOS = entry.POS.split(";").map(
-      (pos: string) => koiDictToPosMap[pos.trim() as KoiDictKeyType],
+      (pos: string) =>
+        koiDictToPosMap[pos.trim() as KoiDictKeyType] as POSTagsKeyType,
     );
 
     // add to POS dictionaries

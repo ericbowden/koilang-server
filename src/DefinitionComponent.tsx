@@ -1,8 +1,8 @@
-import { Box } from "@mui/material";
+import { Box, Tooltip } from "@mui/material";
 import { findMeaning } from "./dictionary/dictionary";
 import { useAppStateContext } from "./state";
 import { ArrayElement, ParsedResponse } from "./types";
-import { posTagKeys } from "./dictionary/posTags";
+import { posTagKeys, posTags, POSTagsKeyType } from "./dictionary/posTags";
 
 // Tags we want to translate (for now)
 /* const FocusedTags: POSTagsKeyType[] = [
@@ -21,6 +21,26 @@ import { posTagKeys } from "./dictionary/posTags";
 // currently we focus on translating all tags
 const FocusedTags = posTagKeys;
 
+function TagComponent(props: { tag: POSTagsKeyType }) {
+  const { tag } = props;
+  return (
+    <Tooltip title={posTags[tag]} arrow>
+      <Box
+        component="span"
+        sx={{
+          border: 0,
+          borderBottom: 1,
+          borderColor: "primary.main",
+          borderStyle: "dashed",
+          cursor: "pointer",
+        }}
+      >
+        {tag}
+      </Box>
+    </Tooltip>
+  );
+}
+
 function getDefinitions(word: ArrayElement<ParsedResponse["parsed"]["words"]>) {
   const style = {
     border: 1,
@@ -33,7 +53,17 @@ function getDefinitions(word: ArrayElement<ParsedResponse["parsed"]["words"]>) {
     <Box key={j} sx={style}>
       <b>Koilang Word: {found.Word}</b> (/{found.Pronunciation}/)
       <div>
-        Meaning: ({found.splitPOS.join(", ")}) {found.Meaning}
+        Meaning: (
+        {found.splitPOS.map((pos, k) => {
+          const isLast = found.splitPOS.length - 1 == k;
+          return (
+            <span key={k}>
+              <TagComponent tag={pos} />
+              {!isLast ? ", " : ""}
+            </span>
+          );
+        })}
+        ) {found.Meaning}
       </div>
     </Box>
   ));
@@ -69,7 +99,8 @@ export default function DefinitionsComponent() {
                 p: 2,
               }}
             >
-              {word.lemma} ({word.tag}){getDefinitions(word)}
+              {word.lemma} (<TagComponent tag={word.tag} />)
+              {getDefinitions(word)}
             </Box>
           );
         })}
