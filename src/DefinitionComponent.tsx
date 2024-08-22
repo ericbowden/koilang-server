@@ -1,8 +1,10 @@
-import { Box, Tooltip } from "@mui/material";
+import { Box, Stack, Tooltip } from "@mui/material";
 import { findMeaning } from "./dictionary/dictionary";
 import { useAppStateContext } from "./state";
 import { ArrayElement, ParsedResponse } from "./types";
 import { posTagKeys, posTags, POSTagsKeyType } from "./dictionary/posTags";
+import VolumeUpIcon from "@mui/icons-material/VolumeUp";
+import axios from "axios";
 
 // Tags we want to translate (for now)
 /* const FocusedTags: POSTagsKeyType[] = [
@@ -20,6 +22,18 @@ import { posTagKeys, posTags, POSTagsKeyType } from "./dictionary/posTags";
 
 // currently we focus on translating all tags
 const FocusedTags = posTagKeys;
+
+function pronounce(pronunciation: string) {
+  void axios
+    .post("https://iawll6of90.execute-api.us-east-1.amazonaws.com/production", {
+      text: pronunciation,
+      voice: "Justin",
+    })
+    .then((res: { data: string }) => {
+      // play sound
+      void new Audio("data:audio/wav;base64," + res.data).play();
+    });
+}
 
 function TagComponent(props: { tag: POSTagsKeyType }) {
   const { tag } = props;
@@ -51,9 +65,36 @@ function getDefinitions(word: ArrayElement<ParsedResponse["parsed"]["words"]>) {
   };
   const definitions = findMeaning(word.lemma, word.tag).map((found, j) => (
     <Box key={j} sx={style}>
-      <b>Koilang Word: {found.Word}</b> (/{found.Pronunciation}/)
+      <Box
+        onClick={() => {
+          pronounce(found.Pronunciation);
+        }}
+      >
+        <Box fontWeight="bold" display="inline">
+          {found.Word}
+        </Box>
+        <Stack
+          alignItems="center"
+          direction="row"
+          sx={{
+            cursor: "pointer",
+            display: "inline-flex",
+            "&:hover": {
+              color: "secondary.main",
+            },
+          }}
+        >
+          &nbsp;[/{found.Pronunciation}/
+          <VolumeUpIcon
+            sx={{
+              fontSize: 16,
+            }}
+          />
+          ]
+        </Stack>
+      </Box>
       <div>
-        Meaning: (
+        (
         {found.splitPOS.map((pos, k) => {
           const isLast = found.splitPOS.length - 1 == k;
           return (
