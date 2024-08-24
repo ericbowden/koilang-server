@@ -22,7 +22,7 @@ function TabPanel(props: TabPanelProps) {
 
 function DisplayComponent() {
   const {
-    appState: { response },
+    appState: { response, isWord },
   } = useAppStateContext();
 
   const [value, setValue] = React.useState(0);
@@ -42,8 +42,8 @@ function DisplayComponent() {
         onChange={handleChange}
         aria-label="wrapped label tabs example"
       >
-        <Tab label="Phrase Translation" />
-        <Tab label="Dependency Graph" />
+        <Tab label={`${isWord ? "Word" : "Phrase"} Translation`} />
+        {!isWord && <Tab label="Dependency Graph" />}
       </Tabs>
       <Box sx={{ marginTop: 2 }}>
         <TabPanel value={value} index={0}>

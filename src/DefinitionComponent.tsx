@@ -1,14 +1,14 @@
 import { Box, CircularProgress, Stack, Tooltip } from "@mui/material";
-import { Definition, findMeaning } from "./dictionary/dictionary";
+import { DefinitionType, findMeaning } from "./dictionary/dictionary";
 import { useAppStateContext } from "./state";
-import { ArrayElement, ParsedResponse } from "./types";
-import { posTagKeys, posTags, POSTagsKeyType } from "./dictionary/posTags";
+import { ArrayElement, ParsedResponseType } from "./types";
+import { posTags, POSTagsKeyType } from "./dictionary/posTags";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import axios from "axios";
 import { Howl } from "howler";
 import { useState } from "react";
 
-// Tags we want to translate (for now)
+// Tags we could only translate (for now)
 /* const FocusedTags: POSTagsKeyType[] = [
   "ADJ",
   "ADV",
@@ -21,9 +21,6 @@ import { useState } from "react";
   "PROPN",
   "VERB",
 ]; */
-
-// currently we focus on translating all tags
-const FocusedTags = posTagKeys;
 
 function POSTagComponent(props: { tag: POSTagsKeyType }) {
   const { tag } = props;
@@ -53,7 +50,7 @@ const definitionsStyle = {
   m: 2,
 };
 
-function Term(props: { found: Definition }) {
+function Term(props: { found: DefinitionType }) {
   const { found } = props;
   const [loading, setLoading] = useState(false);
   function pronounce(pronunciation: string) {
@@ -89,29 +86,31 @@ function Term(props: { found: Definition }) {
         <Box fontWeight="bold" display="inline">
           {found.Word}
         </Box>
-        <Stack
-          alignItems="center"
-          direction="row"
-          sx={{
-            cursor: "pointer",
-            display: "inline-flex",
-            "&:hover": {
-              color: "secondary.main",
-            },
-          }}
-        >
-          &nbsp;[/{found.Pronunciation}/
-          {!loading ? (
-            <VolumeUpIcon
-              sx={{
-                fontSize: 16,
-              }}
-            />
-          ) : (
-            <CircularProgress size={16} />
-          )}
-          ]
-        </Stack>
+        {found.Pronunciation && (
+          <Stack
+            alignItems="center"
+            direction="row"
+            sx={{
+              cursor: "pointer",
+              display: "inline-flex",
+              "&:hover": {
+                color: "secondary.main",
+              },
+            }}
+          >
+            &nbsp;[/{found.Pronunciation}/
+            {!loading ? (
+              <VolumeUpIcon
+                sx={{
+                  fontSize: 16,
+                }}
+              />
+            ) : (
+              <CircularProgress size={16} />
+            )}
+            ]
+          </Stack>
+        )}
       </Box>
       <div>
         (
@@ -131,11 +130,16 @@ function Term(props: { found: Definition }) {
 }
 
 function Definition(props: {
-  word: ArrayElement<ParsedResponse["parsed"]["words"]>;
+  word: ArrayElement<ParsedResponseType["parsed"]["words"]>;
 }) {
   const { word } = props;
+  const {
+    appState: { isWord },
+  } = useAppStateContext();
 
-  const definitions = findMeaning(word.lemma, word.tag).map((found, i) => (
+  const phraseTags = !isWord ? word.tag : undefined;
+
+  const definitions = findMeaning(word.lemma, phraseTags).map((found, i) => (
     <Box key={i}>
       <Term found={found} />
     </Box>
@@ -150,15 +154,15 @@ function Definition(props: {
 
 export default function DefinitionsComponent() {
   const {
-    appState: { response },
+    appState: { response, isWord },
   } = useAppStateContext();
 
   return (
     <>
       {response.parsed.words
-        // filter out words that we don't want to focus on
+        // filter out pos that we don't want to show
         .filter((word) => {
-          return FocusedTags.includes(word.tag);
+          return !["PUNCT"].includes(word.tag);
         })
         .map((word, i) => {
           return (
@@ -172,7 +176,12 @@ export default function DefinitionsComponent() {
                 p: 2,
               }}
             >
-              {word.lemma} (<POSTagComponent tag={word.tag} />)
+              {word.lemma}{" "}
+              {!isWord && (
+                <>
+                  (<POSTagComponent tag={word.tag} />)
+                </>
+              )}
               <Definition word={word} />
             </Box>
           );

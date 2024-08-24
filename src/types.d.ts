@@ -1,7 +1,7 @@
 import { POSTagsKeyType } from "./dictionary/posTags";
 import { DependencyTagsKey } from "./dictionary/dependencyTags";
 
-interface ParsedResponse {
+interface ParsedResponseType {
   parsed: {
     arcs: {
       dir: "left" | "right";
@@ -19,7 +19,9 @@ interface ParsedResponse {
 }
 
 interface AppStateType {
-  response: ParsedResponse | Record<string, never>;
+  response: ParsedResponseType | Record<string, never>;
+  formText: string;
+  isWord: boolean;
 }
 
 interface AppStateContextType {

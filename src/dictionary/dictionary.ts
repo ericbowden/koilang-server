@@ -9,18 +9,20 @@ const koiDictToPosMap = {
   int: "INTJ",
   n: "NOUN",
   num: "NUM",
-  o: "", // onomatopoeia
-  phr: "", // phrase
   pn: "PRON",
-  post: "", // position
   ppr: "PROPN",
   v: "VERB",
+
+  // not used in spacy, only in the koi dict
+  o: "ONOMATOPOEIA",
+  phr: "PHRASE",
+  post: "POSITION",
 } as const;
 
 type KoiDictKeyType = keyof typeof koiDictToPosMap;
 const koiDictToPosMapKeys = Object.keys(koiDictToPosMap) as KoiDictKeyType[];
 
-interface TableEntry {
+interface TableEntryType {
   Word: string;
   Pronunciation: string;
   POS: string;
@@ -28,16 +30,16 @@ interface TableEntry {
   "Verb Class": string;
 }
 
-export interface Definition extends TableEntry {
+export interface DefinitionType extends TableEntryType {
   splitMeaning: string[];
   splitPOS: POSTagsKeyType[];
 }
 
 const dictByPOSMap = Object.fromEntries(
-  posTagKeys.map((key) => [key, [] as Definition[]]),
-) as Record<POSTagsKeyType, Definition[]>;
+  posTagKeys.map((key) => [key, [] as DefinitionType[]]),
+) as Record<POSTagsKeyType, DefinitionType[]>;
 
-function addToPOSDictionaries(entry: Definition, line: string) {
+function addToPOSDictionaries(entry: DefinitionType, line: string) {
   if (!entry.POS) {
     throw new Error("ParseError: No POS entry for line: " + line);
   }
@@ -47,8 +49,9 @@ function addToPOSDictionaries(entry: Definition, line: string) {
     if (entry.POS.match(koiKey)) {
       const posKey = koiDictToPosMap[koiKey];
       // if pos found add it to that pos dictionary
-      if (posKey) {
-        dictByPOSMap[posKey].push(entry);
+      //if (Object.prototype.hasOwnProperty.call(dictByPOSMap, posKey)) {
+      if (posKey in dictByPOSMap) {
+        dictByPOSMap[posKey as POSTagsKeyType].push(entry);
       }
     }
   });
@@ -56,10 +59,10 @@ function addToPOSDictionaries(entry: Definition, line: string) {
 
 function convertDictToJSONArray(input: string) {
   const lines = input.trim().split("\n");
-  const headers = lines[0].split("\t") as (keyof TableEntry)[];
+  const headers = lines[0].split("\t") as (keyof TableEntryType)[];
   const data = lines.slice(1).map((line) => {
     const values = line.split("\t");
-    const entry = {} as Definition;
+    const entry = {} as DefinitionType;
 
     // add per each header
     headers.forEach((header, index) => {
@@ -91,7 +94,7 @@ const dictArray = convertDictToJSONArray(table);
 export function findMeaning(text: string, dictKey?: POSTagsKeyType) {
   const dictToUse = dictKey ? dictByPOSMap[dictKey] : dictArray;
 
-  return dictToUse.filter((item: Definition) => {
+  return dictToUse.filter((item: DefinitionType) => {
     return item.splitMeaning.includes(text);
   });
 }

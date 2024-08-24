@@ -3,7 +3,7 @@ import Box from "@mui/material/Box";
 import axios, { AxiosResponse } from "axios";
 import { useFormik } from "formik";
 import { useAppStateContext } from "./state";
-import { ParsedResponse } from "./types";
+import { ParsedResponseType } from "./types";
 
 interface FormType {
   "form-text"?: string;
@@ -30,9 +30,11 @@ function FormComponent() {
         .post("/process", {
           text: values["form-text"],
         })
-        .then((res: AxiosResponse<ParsedResponse>) => {
+        .then((res: AxiosResponse<ParsedResponseType>) => {
           setAppState({
             response: res.data,
+            formText: values["form-text"],
+            isWord: res.data.parsed.words.length == 1,
           });
         });
     },
@@ -49,7 +51,7 @@ function FormComponent() {
       justifyContent="center"
     >
       <TextField
-        label="Input English Text"
+        label="Word or Phrase"
         variant="outlined"
         id="form-text"
         sx={{ width: 250 }}

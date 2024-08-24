@@ -19,6 +19,8 @@ function AppComponent() {
   // init app state
   const [appState, _setAppState] = useState<AppStateType>({
     response: {},
+    formText: "",
+    isWord: false,
   });
 
   // helper method to allow passing partial objects into the app state
