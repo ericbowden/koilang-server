@@ -5,6 +5,7 @@ import { ArrayElement, ParsedResponse } from "./types";
 import { posTagKeys, posTags, POSTagsKeyType } from "./dictionary/posTags";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import axios from "axios";
+import { Howl } from "howler";
 
 // Tags we want to translate (for now)
 /* const FocusedTags: POSTagsKeyType[] = [
@@ -27,11 +28,15 @@ function pronounce(pronunciation: string) {
   void axios
     .post("https://iawll6of90.execute-api.us-east-1.amazonaws.com/production", {
       text: pronunciation,
-      voice: "Justin",
+      voice: "Maja",
     })
     .then((res: { data: string }) => {
       // play sound
-      void new Audio("data:audio/wav;base64," + res.data).play();
+      const sound = new Howl({
+        src: ["data:audio/wav;base64," + res.data],
+      });
+
+      sound.play();
     });
 }
 
