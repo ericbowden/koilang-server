@@ -42,7 +42,7 @@ function DisplayComponent() {
         onChange={handleChange}
         aria-label="wrapped label tabs example"
       >
-        <Tab label="Translation" />
+        <Tab label="Phrase Translation" />
         <Tab label="Dependency Graph" />
       </Tabs>
       <Box sx={{ marginTop: 2 }}>

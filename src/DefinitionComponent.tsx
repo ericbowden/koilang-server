@@ -1,11 +1,12 @@
-import { Box, Stack, Tooltip } from "@mui/material";
-import { findMeaning } from "./dictionary/dictionary";
+import { Box, CircularProgress, Stack, Tooltip } from "@mui/material";
+import { Definition, findMeaning } from "./dictionary/dictionary";
 import { useAppStateContext } from "./state";
 import { ArrayElement, ParsedResponse } from "./types";
 import { posTagKeys, posTags, POSTagsKeyType } from "./dictionary/posTags";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import axios from "axios";
 import { Howl } from "howler";
+import { useState } from "react";
 
 // Tags we want to translate (for now)
 /* const FocusedTags: POSTagsKeyType[] = [
@@ -24,23 +25,7 @@ import { Howl } from "howler";
 // currently we focus on translating all tags
 const FocusedTags = posTagKeys;
 
-function pronounce(pronunciation: string) {
-  void axios
-    .post("https://iawll6of90.execute-api.us-east-1.amazonaws.com/production", {
-      text: pronunciation,
-      voice: "Maja",
-    })
-    .then((res: { data: string }) => {
-      // play sound
-      const sound = new Howl({
-        src: ["data:audio/wav;base64," + res.data],
-      });
-
-      sound.play();
-    });
-}
-
-function TagComponent(props: { tag: POSTagsKeyType }) {
+function POSTagComponent(props: { tag: POSTagsKeyType }) {
   const { tag } = props;
   return (
     <Tooltip title={posTags[tag]} arrow>
@@ -60,16 +45,42 @@ function TagComponent(props: { tag: POSTagsKeyType }) {
   );
 }
 
-function getDefinitions(word: ArrayElement<ParsedResponse["parsed"]["words"]>) {
-  const style = {
-    border: 1,
-    borderColor: "secondary.main",
-    borderRadius: 2,
-    p: 2,
-    m: 2,
-  };
-  const definitions = findMeaning(word.lemma, word.tag).map((found, j) => (
-    <Box key={j} sx={style}>
+const definitionsStyle = {
+  border: 1,
+  borderColor: "secondary.main",
+  borderRadius: 2,
+  p: 2,
+  m: 2,
+};
+
+function Term(props: { found: Definition }) {
+  const { found } = props;
+  const [loading, setLoading] = useState(false);
+  function pronounce(pronunciation: string) {
+    if (loading) return;
+
+    setLoading(true);
+    void axios
+      .post(
+        "https://iawll6of90.execute-api.us-east-1.amazonaws.com/production",
+        {
+          text: pronunciation,
+          voice: "Maja",
+        },
+      )
+      .then((res: { data: string }) => {
+        // play sound
+        const sound = new Howl({
+          src: ["data:audio/wav;base64," + res.data],
+        });
+
+        sound.play();
+        setLoading(false);
+      });
+  }
+
+  return (
+    <Box sx={definitionsStyle}>
       <Box
         onClick={() => {
           pronounce(found.Pronunciation);
@@ -90,11 +101,15 @@ function getDefinitions(word: ArrayElement<ParsedResponse["parsed"]["words"]>) {
           }}
         >
           &nbsp;[/{found.Pronunciation}/
-          <VolumeUpIcon
-            sx={{
-              fontSize: 16,
-            }}
-          />
+          {!loading ? (
+            <VolumeUpIcon
+              sx={{
+                fontSize: 16,
+              }}
+            />
+          ) : (
+            <CircularProgress size={16} />
+          )}
           ]
         </Stack>
       </Box>
@@ -104,7 +119,7 @@ function getDefinitions(word: ArrayElement<ParsedResponse["parsed"]["words"]>) {
           const isLast = found.splitPOS.length - 1 == k;
           return (
             <span key={k}>
-              <TagComponent tag={pos} />
+              <POSTagComponent tag={pos} />
               {!isLast ? ", " : ""}
             </span>
           );
@@ -112,12 +127,24 @@ function getDefinitions(word: ArrayElement<ParsedResponse["parsed"]["words"]>) {
         ) {found.Meaning}
       </div>
     </Box>
+  );
+}
+
+function Definition(props: {
+  word: ArrayElement<ParsedResponse["parsed"]["words"]>;
+}) {
+  const { word } = props;
+
+  const definitions = findMeaning(word.lemma, word.tag).map((found, i) => (
+    <Box key={i}>
+      <Term found={found} />
+    </Box>
   ));
 
   return definitions.length > 0 ? (
     definitions
   ) : (
-    <Box sx={style}>No definitions found!</Box>
+    <Box sx={definitionsStyle}>No definitions found!</Box>
   );
 }
 
@@ -145,8 +172,8 @@ export default function DefinitionsComponent() {
                 p: 2,
               }}
             >
-              {word.lemma} (<TagComponent tag={word.tag} />)
-              {getDefinitions(word)}
+              {word.lemma} (<POSTagComponent tag={word.tag} />)
+              <Definition word={word} />
             </Box>
           );
         })}
