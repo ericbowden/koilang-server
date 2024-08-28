@@ -25,18 +25,14 @@ def process_text():
     # Process text with spaCy
     doc = nlp(text)
 
-    # Parse entities
-    # ents_parse = displacy.parse_ents(doc)
-    # parse_html = displacy.render(ents_parse, style="ent", manual=True)
-
     # Parse dependencies
-    deps_parse = displacy.parse_deps(doc)
+    deps_parse = displacy.parse_deps(doc,  options={'fine_grained': True})
     deps_html = displacy.render(deps_parse, style="dep", manual=True)
 
     response = jsonify({
         'parsed': {
             'arcs': deps_parse['arcs'],
-            'words': [{"text": token.text, "lemma": token.lemma_, "tag": token.pos_} for token in doc]},
+            'words': [{"text": token.text, "lemma": token.lemma_, "tag": token.tag_, "pos": token.pos_} for token in doc]},
         'html': deps_html})
 
     return response

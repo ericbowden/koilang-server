@@ -21,7 +21,7 @@ export const posTags = {
   EOL: "end of line",
   SPACE: "space",
 
-  // English POS Tags
+  // Fine Grained EN POS Tags
   ".": "punctuation mark, sentence closer",
   ",": "punctuation mark, comma",
   "-LRB-": "left round bracket",

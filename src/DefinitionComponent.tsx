@@ -1,31 +1,32 @@
 import { Box, CircularProgress, Stack, Tooltip } from "@mui/material";
-import { DefinitionType, findMeaning } from "./dictionary/dictionary";
+import { DefinitionType, findMeaning } from "./dictionary/dictionaryUtils";
 import { useAppStateContext } from "./state";
 import { ArrayElement, ParsedResponseType } from "./types";
 import { posTags, POSTagsKeyType } from "./dictionary/posTags";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import axios from "axios";
 import { Howl } from "howler";
 import { useState } from "react";
 
 // Tags we could only translate (for now)
-/* const FocusedTags: POSTagsKeyType[] = [
+/* const focusedPOS: POSTagsKeyType[] = [
   "ADJ",
-  "ADV",
-  "CONJ",
-  "DET",
-  "INTJ",
+  //"ADV",
+  //"CONJ",
+  //"DET",
+  //"INTJ",
   "NOUN",
-  "NUM",
+  //"NUM",
   "PRON",
-  "PROPN",
+  //"PROPN",
   "VERB",
 ]; */
 
-function POSTagComponent(props: { tag: POSTagsKeyType }) {
-  const { tag } = props;
+function POSComponent(props: { pos: POSTagsKeyType }) {
+  const { pos } = props;
   return (
-    <Tooltip title={posTags[tag]} arrow>
+    <Tooltip title={posTags[pos]} arrow>
       <Box
         component="span"
         sx={{
@@ -36,7 +37,7 @@ function POSTagComponent(props: { tag: POSTagsKeyType }) {
           cursor: "pointer",
         }}
       >
-        {tag}
+        {pos}
       </Box>
     </Tooltip>
   );
@@ -53,6 +54,7 @@ const definitionsStyle = {
 function Term(props: { found: DefinitionType }) {
   const { found } = props;
   const [loading, setLoading] = useState(false);
+  const [playing, setPlaying] = useState(false);
   function pronounce(pronunciation: string) {
     if (loading) return;
 
@@ -69,12 +71,26 @@ function Term(props: { found: DefinitionType }) {
         // play sound
         const sound = new Howl({
           src: ["data:audio/wav;base64," + res.data],
+          onplay: function () {
+            setLoading(false);
+            setPlaying(true);
+          },
+          onend: function () {
+            setPlaying(false);
+          },
         });
 
         sound.play();
-        setLoading(false);
       });
   }
+
+  const volumeElement = loading ? (
+    <CircularProgress size={16} />
+  ) : playing ? (
+    <PlayArrowIcon sx={{ fontSize: 16 }} />
+  ) : (
+    <VolumeUpIcon sx={{ fontSize: 16 }} />
+  );
 
   return (
     <Box sx={definitionsStyle}>
@@ -98,17 +114,7 @@ function Term(props: { found: DefinitionType }) {
               },
             }}
           >
-            &nbsp;[/{found.Pronunciation}/
-            {!loading ? (
-              <VolumeUpIcon
-                sx={{
-                  fontSize: 16,
-                }}
-              />
-            ) : (
-              <CircularProgress size={16} />
-            )}
-            ]
+            &nbsp;[/{found.Pronunciation}/{volumeElement}]
           </Stack>
         )}
       </Box>
@@ -118,7 +124,7 @@ function Term(props: { found: DefinitionType }) {
           const isLast = found.splitPOS.length - 1 == k;
           return (
             <span key={k}>
-              <POSTagComponent tag={pos} />
+              <POSComponent pos={pos} />
               {!isLast ? ", " : ""}
             </span>
           );
@@ -137,7 +143,7 @@ function Definition(props: {
     appState: { isWord },
   } = useAppStateContext();
 
-  const phraseTags = !isWord ? word.tag : undefined;
+  const phraseTags = !isWord ? word.pos : undefined;
 
   const definitions = findMeaning(word.lemma, phraseTags).map((found, i) => (
     <Box key={i}>
@@ -161,9 +167,10 @@ export default function DefinitionsComponent() {
     <>
       {response.parsed.words
         // filter out pos that we don't want to show
-        .filter((word) => {
-          return !["PUNCT"].includes(word.tag);
-        })
+        /* .filter((word) => {
+          //return !["PUNCT"].includes(word.tag);
+          //return focusedTags.includes(word.tag);
+        }) */
         .map((word, i) => {
           return (
             <Box
@@ -179,7 +186,8 @@ export default function DefinitionsComponent() {
               {word.lemma}{" "}
               {!isWord && (
                 <>
-                  (<POSTagComponent tag={word.tag} />)
+                  (<POSComponent pos={word.pos} />/
+                  <POSComponent pos={word.tag} />)
                 </>
               )}
               <Definition word={word} />
