@@ -1,5 +1,5 @@
 import { posTagKeys, POSTagsKeyType } from "./posTags";
-import table from "./table";
+import table from "./dataTable";
 
 const koiDictToPosMap = {
   adj: "ADJ",
@@ -49,7 +49,6 @@ function addToPOSDictionaries(entry: DefinitionType, line: string) {
     if (entry.POS.match(koiKey)) {
       const posKey = koiDictToPosMap[koiKey];
       // if pos found add it to that pos dictionary
-      //if (Object.prototype.hasOwnProperty.call(dictByPOSMap, posKey)) {
       if (posKey in dictByPOSMap) {
         dictByPOSMap[posKey as POSTagsKeyType].push(entry);
       }
@@ -72,7 +71,7 @@ function convertDictToJSONArray(input: string) {
     });
 
     // split meaning on whitespace
-    entry.splitMeaning = entry.Meaning.split(" ");
+    entry.splitMeaning = entry.Meaning.match(/\b\w+\b/g) ?? [];
 
     // split POS on ';' and convert to official POS
     entry.splitPOS = entry.POS.split(";").map(
@@ -88,8 +87,9 @@ function convertDictToJSONArray(input: string) {
 
   return data;
 }
-
+console.time("convertDataTime");
 const dictArray = convertDictToJSONArray(table);
+console.timeEnd("convertDataTime");
 
 export function findMeaning(text: string, dictKey?: POSTagsKeyType) {
   const dictToUse = dictKey ? dictByPOSMap[dictKey] : dictArray;

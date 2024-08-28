@@ -1,0 +1,7 @@
+- add articles/detminers
+    - plural should be determined by the noun plural
+- add pronouns
+- add tenses
+- add mood
+- to be ()
+- look and see why love doesn't show lona'en
