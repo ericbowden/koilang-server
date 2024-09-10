@@ -134,8 +134,10 @@ function Term(props: { found: DefinitionType }) {
   );
 }
 
+type Word = ArrayElement<ParsedResponseType["parsed"]["words"]>;
+
 function Definition(props: {
-  word: ArrayElement<ParsedResponseType["parsed"]["words"]>;
+  word: Word;
 }) {
   const { word } = props;
   const {
@@ -155,6 +157,12 @@ function Definition(props: {
   ) : (
     <Box sx={definitionsStyle}>No definitions found!</Box>
   );
+}
+
+const getDefinitionText = (word: Word) => {
+  return word.lemma.toLowerCase() === word.text.toLowerCase()
+    ? word.text
+    : `${word.text} [to ${word.lemma}]`;
 }
 
 export default function DefinitionsComponent() {
@@ -182,7 +190,7 @@ export default function DefinitionsComponent() {
                 p: 2,
               }}
             >
-              {word.lemma}{" "}
+              {getDefinitionText(word)}{" "}
               {!isWord && (
                 <>
                   (<POSComponent pos={word.pos} />/
