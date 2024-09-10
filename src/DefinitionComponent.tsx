@@ -1,7 +1,6 @@
 import { Box, CircularProgress, Stack, Tooltip } from "@mui/material";
 import { DefinitionType, findMeaning } from "./dictionary/dictionaryUtils";
-import { useAppStateContext } from "./state";
-import { ArrayElement, ParsedResponseType } from "./types";
+import { ParsedResponseType, useAppStateContext } from "./state";
 import { posTags, POSTagsKeyType } from "./dictionary/posTags";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";

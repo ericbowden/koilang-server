@@ -2,8 +2,7 @@ import { Button, TextField } from "@mui/material";
 import Box from "@mui/material/Box";
 import axios, { AxiosResponse } from "axios";
 import { useFormik } from "formik";
-import { useAppStateContext } from "./state";
-import { ParsedResponseType } from "./types";
+import { useAppStateContext, ParsedResponseType } from "./state";
 
 interface FormType {
   "form-text"?: string;

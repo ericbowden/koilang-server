@@ -3,13 +3,12 @@ import NavComponent from "./NavComponent";
 import FormComponent from "./FormComponent";
 import DisplayComponent from "./DisplayComponent";
 import { useState } from "react";
-import { AppStateContext } from "./state";
-import { AppStateType } from "./types";
+import { AppStateContext, AppStateType } from "./state";
 
 const theme = createTheme({
   shape: {
     borderRadius: 8, //pixels
-  }
+  },
 });
 
 theme.typography.h6 = {
