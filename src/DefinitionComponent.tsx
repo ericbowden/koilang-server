@@ -46,7 +46,7 @@ function POSComponent(props: { pos: POSTagsKeyType }) {
 const definitionsStyle = {
   border: 1,
   borderColor: "secondary.main",
-  borderRadius: 2,
+  borderRadius: 1,
   p: 2,
   m: 2,
 };
@@ -178,7 +178,7 @@ export default function DefinitionsComponent() {
               sx={{
                 border: 1,
                 borderColor: "primary.main",
-                borderRadius: 2,
+                borderRadius: 1,
                 marginBottom: 2,
                 p: 2,
               }}

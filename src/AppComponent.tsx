@@ -6,7 +6,11 @@ import { useState } from "react";
 import { AppStateContext } from "./state";
 import { AppStateType } from "./types";
 
-const theme = createTheme();
+const theme = createTheme({
+  shape: {
+    borderRadius: 8, //pixels
+  }
+});
 
 theme.typography.h6 = {
   fontSize: ".9rem",
