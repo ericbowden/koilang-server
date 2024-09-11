@@ -3,6 +3,7 @@ import { UncontrolledReactSVGPanZoom } from "react-svg-pan-zoom";
 import { useAppStateContext } from "./state";
 import { useWindowSize } from "@react-hook/window-size";
 import { useCurrentBreakpoint } from "./hooks";
+import { dependencyTags, DependencyTagsKey } from "./dictionary/dependencyTags";
 
 export default function SVGComponent() {
   const Viewer = useRef<UncontrolledReactSVGPanZoom>(null);
@@ -10,11 +11,26 @@ export default function SVGComponent() {
   const [svgWidth, setSvgWidth] = useState(0);
   const [winWidth, winHeight] = useWindowSize();
   const [viewerTop, setViewerTop] = useState(0);
+  const [depTags, setDepTags] = useState<string[]>([]);
   const { breakpointSize } = useCurrentBreakpoint();
 
   const {
     appState: { response },
   } = useAppStateContext();
+
+  useEffect(() => {
+    const tags = [];
+
+    // get dependency tags
+    for (const value of document
+      .querySelectorAll(".displacy-arrow textPath")
+      .entries()) {
+      const text = (value[1].textContent ?? "") as DependencyTagsKey;
+      tags.push(`${text} - ${dependencyTags[text]}`);
+    }
+
+    setDepTags(tags);
+  }, []);
 
   useEffect(() => {
     // Parse the SVG string and create a DOM element
@@ -48,6 +64,9 @@ export default function SVGComponent() {
   return (
     <>
       <hr />
+      {depTags.map((tag, i) => {
+        return <div key={i}>{tag}</div>;
+      })}
       <UncontrolledReactSVGPanZoom
         ref={Viewer}
         width={winWidth}
