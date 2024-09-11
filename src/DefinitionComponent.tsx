@@ -93,16 +93,15 @@ function Term(props: { found: DefinitionType }) {
 
   return (
     <Box sx={definitionsStyle}>
-      <Box
-        onClick={() => {
-          pronounce(found.Pronunciation);
-        }}
-      >
+      <Box>
         <Box fontWeight="bold" display="inline">
           {found.Word}
         </Box>
         {found.Pronunciation && (
           <Stack
+            onClick={() => {
+              pronounce(found.Pronunciation);
+            }}
             alignItems="center"
             direction="row"
             sx={{
