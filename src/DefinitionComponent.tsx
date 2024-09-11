@@ -1,4 +1,4 @@
-import { Box, CircularProgress, Stack, Tooltip } from "@mui/material";
+import { Box, CircularProgress, Link, Stack, Tooltip } from "@mui/material";
 import { DefinitionType, findMeaning } from "./dictionary/dictionaryUtils";
 import { ParsedResponseType, useAppStateContext } from "./state";
 import { posTags, POSTagsKeyType } from "./dictionary/posTags";
@@ -136,9 +136,7 @@ function Term(props: { found: DefinitionType }) {
 
 type Word = ArrayElement<ParsedResponseType["parsed"]["words"]>;
 
-function Definition(props: {
-  word: Word;
-}) {
+function Definition(props: { word: Word }) {
   const { word } = props;
   const {
     appState: { isWord },
@@ -155,15 +153,24 @@ function Definition(props: {
   return definitions.length > 0 ? (
     definitions
   ) : (
-    <Box sx={definitionsStyle}>No definitions found!</Box>
+    <Box sx={definitionsStyle}>
+      No definitions found! Request a word translation{" "}
+      <Link
+        href={`https://docs.google.com/forms/d/e/1FAIpQLScqAN45-f37BOTCgp8ZM81i9Yg6yeFxpYigHpiYG63LjqBAew/viewform?usp=pp_url&entry.1301061718=${word.lemma}`}
+        target="_blank"
+      >
+        here
+      </Link>
+      .
+    </Box>
   );
 }
 
 const getDefinitionText = (word: Word) => {
   return word.lemma.toLowerCase() === word.text.toLowerCase()
     ? word.text
-    : `${word.text} [to ${word.lemma}]`;
-}
+    : `${word.text} [${word.pos == "VERB" ? "to " : ""}${word.lemma}]`;
+};
 
 export default function DefinitionsComponent() {
   const {
