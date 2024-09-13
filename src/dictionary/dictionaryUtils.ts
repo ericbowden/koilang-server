@@ -1,5 +1,8 @@
 import { posTagKeys, POSTagsKeyType } from "./posTags";
 import table from "./dataTable";
+import { pronouns } from "./pronoun";
+import { DefinitionType, DefinitionTypeRecord, TableEntryType } from "./types";
+import { articles } from "./determiner";
 
 const koiDictToPosMap = {
   adj: "ADJ",
@@ -22,31 +25,27 @@ const koiDictToPosMap = {
 type KoiDictKeyType = keyof typeof koiDictToPosMap;
 const koiDictToPosMapKeys = Object.keys(koiDictToPosMap) as KoiDictKeyType[];
 
-interface TableEntryType {
-  Word: string;
-  Pronunciation: string;
-  POS: string;
-  Meaning: string;
-  "Verb Class": string;
-}
+const tableEntryMap: Record<string, keyof TableEntryType> = {
+  Word: "word",
+  Pronunciation: "pronunciation",
+  POS: "pos",
+  Meaning: "meaning",
+  "Verb Class": "verbClass",
+} as const;
 
-export interface DefinitionType extends TableEntryType {
-  splitMeaning: string[];
-  splitPOS: POSTagsKeyType[];
-}
-
+// init pos dictionary
 const dictByPOSMap = Object.fromEntries(
   posTagKeys.map((key) => [key, [] as DefinitionType[]]),
-) as Record<POSTagsKeyType, DefinitionType[]>;
+) as DefinitionTypeRecord;
 
 function addToPOSDictionaries(entry: DefinitionType, line: string) {
-  if (!entry.POS) {
+  if (!entry.pos) {
     throw new Error("ParseError: No POS entry for line: " + line);
   }
 
   // loop over and add pos dictionaries
   koiDictToPosMapKeys.forEach((koiKey) => {
-    if (entry.POS.match(koiKey)) {
+    if (entry.pos.match(koiKey)) {
       const posKey = koiDictToPosMap[koiKey];
       // if pos found add it to that pos dictionary
       if (posKey in dictByPOSMap) {
@@ -58,7 +57,7 @@ function addToPOSDictionaries(entry: DefinitionType, line: string) {
 
 function convertDictToJSONArray(input: string) {
   const lines = input.trim().split("\n");
-  const headers = lines[0].split("\t") as (keyof TableEntryType)[];
+  const headers = lines[0].split("\t");
   const data = lines.slice(1).map((line) => {
     const values = line.split("\t");
     const entry = {} as DefinitionType;
@@ -66,18 +65,24 @@ function convertDictToJSONArray(input: string) {
     // add per each header
     headers.forEach((header, index) => {
       if (values[index]) {
-        entry[header] = values[index].trim();
+        const mapping = tableEntryMap[header];
+        entry[mapping] = values[index].trim();
       }
     });
 
     // split meaning on whitespace
-    entry.splitMeaning = entry.Meaning.match(/\b\w+\b/g) ?? [];
+    entry.splitMeaning = entry.meaning.match(/\b\w+\b/g) ?? [];
 
     // split POS on ';' and convert to official POS
-    entry.splitPOS = entry.POS.split(";").map(
-      (pos: string) =>
-        koiDictToPosMap[pos.trim() as KoiDictKeyType] as POSTagsKeyType,
-    );
+    entry.splitPOS = entry.pos
+      .split(";")
+      .map(
+        (pos: string) =>
+          koiDictToPosMap[pos.trim() as KoiDictKeyType] as POSTagsKeyType,
+      );
+
+    // add tags
+    entry.tags = [];
 
     // add to POS dictionaries
     addToPOSDictionaries(entry, line);
@@ -88,7 +93,14 @@ function convertDictToJSONArray(input: string) {
   return data;
 }
 console.time("convertDataTime");
+// convert table to json array
 const dictArray = convertDictToJSONArray(table);
+
+// add extra definitions
+dictArray.push(...pronouns, ...articles);
+dictByPOSMap.PRON = [...pronouns, ...dictByPOSMap.PRON];
+dictByPOSMap.DET = [...articles, ...dictByPOSMap.DET];
+
 console.timeEnd("convertDataTime");
 
 export function findMeaning(text: string, dictKey?: POSTagsKeyType) {

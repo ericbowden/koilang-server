@@ -1,5 +1,12 @@
-import { Box, CircularProgress, Link, Stack, Tooltip } from "@mui/material";
-import { DefinitionType, findMeaning } from "./dictionary/dictionaryUtils";
+import {
+  Box,
+  CircularProgress,
+  Link,
+  Stack,
+  Tooltip,
+  Typography,
+} from "@mui/material";
+import { findMeaning } from "./dictionary/dictionaryUtils";
 import { ParsedResponseType, useAppStateContext } from "./state";
 import { posTags, POSTagsKeyType } from "./dictionary/posTags";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
@@ -7,6 +14,7 @@ import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import axios from "axios";
 import { Howl } from "howler";
 import { useState } from "react";
+import { DefinitionType } from "./dictionary/types";
 
 // Tags we could only translate (for now)
 /* const focusedPOS: POSTagsKeyType[] = [
@@ -95,12 +103,12 @@ function Term(props: { found: DefinitionType }) {
     <Box sx={definitionsStyle}>
       <Box>
         <Box fontWeight="bold" display="inline">
-          {found.Word}
+          {found.word}
         </Box>
-        {found.Pronunciation && (
+        {found.pronunciation && (
           <Stack
             onClick={() => {
-              pronounce(found.Pronunciation);
+              pronounce(found.pronunciation);
             }}
             alignItems="center"
             direction="row"
@@ -112,11 +120,11 @@ function Term(props: { found: DefinitionType }) {
               },
             }}
           >
-            &nbsp;[/{found.Pronunciation}/{volumeElement}]
+            &nbsp;[/{found.pronunciation}/{volumeElement}]
           </Stack>
         )}
       </Box>
-      <div>
+      <Box>
         (
         {found.splitPOS.map((pos, k) => {
           const isLast = found.splitPOS.length - 1 == k;
@@ -127,8 +135,8 @@ function Term(props: { found: DefinitionType }) {
             </span>
           );
         })}
-        ) {found.Meaning}
-      </div>
+        ) {found.meaning}
+      </Box>
     </Box>
   );
 }
@@ -186,8 +194,9 @@ export default function DefinitionsComponent() {
         }) */
         .map((word, i) => {
           return (
-            <Box
+            <Typography
               key={i}
+              component="div"
               sx={{
                 border: 1,
                 borderColor: "primary.main",
@@ -204,7 +213,7 @@ export default function DefinitionsComponent() {
                 </>
               )}
               <Definition word={word} />
-            </Box>
+            </Typography>
           );
         })}
     </>
