@@ -4,6 +4,7 @@ import { useAppStateContext } from "./state";
 import { useWindowSize } from "@react-hook/window-size";
 import { useCurrentBreakpoint } from "./hooks";
 import { dependencyTags, DependencyTagsKey } from "./dictionary/dependencyTags";
+import { posTags, POSTagsKeyType } from "./dictionary/posTags";
 
 export default function SVGComponent() {
   const Viewer = useRef<UncontrolledReactSVGPanZoom>(null);
@@ -11,26 +12,11 @@ export default function SVGComponent() {
   const [svgWidth, setSvgWidth] = useState(0);
   const [winWidth, winHeight] = useWindowSize();
   const [viewerTop, setViewerTop] = useState(0);
-  const [depTags, setDepTags] = useState<string[]>([]);
   const { breakpointSize } = useCurrentBreakpoint();
 
   const {
     appState: { response },
   } = useAppStateContext();
-
-  useEffect(() => {
-    const tags = [];
-
-    // get dependency tags
-    for (const value of document
-      .querySelectorAll(".displacy-arrow textPath")
-      .entries()) {
-      const text = (value[1].textContent ?? "") as DependencyTagsKey;
-      tags.push(`${text} - ${dependencyTags[text]}`);
-    }
-
-    setDepTags(tags);
-  }, []);
 
   useEffect(() => {
     // Parse the SVG string and create a DOM element
@@ -41,6 +27,22 @@ export default function SVGComponent() {
     // replace temp svg with actuall svg
     const container = document.getElementById("inner-g");
     if (container) container.replaceChildren(svgElement);
+
+    // add arc dependency label
+    document.querySelectorAll(".displacy-arrow textPath").forEach((value) => {
+      const text = value.textContent as DependencyTagsKey;
+      value.textContent = `${text} (${dependencyTags[text]})`;
+    });
+
+    // set word pos label
+    document.querySelectorAll(".displacy-tag").forEach((value) => {
+      const text = value.textContent as POSTagsKeyType;
+
+      const tspan = value.cloneNode() as SVGTSpanElement;
+      tspan.textContent = `(${posTags[text]})`;
+      tspan.setAttribute("font-size", "10");
+      value.after(tspan);
+    });
 
     // set svg dimentions
     setSvgHeight(parseInt(svgElement.getAttribute("height") ?? ""));
@@ -56,7 +58,7 @@ export default function SVGComponent() {
       }
     }, 0);
 
-    // get viewer top
+    // get the viewer dimensions to properly set the height
     const viewerEl = document.getElementsByClassName("svg-display")[0];
     setViewerTop(viewerEl.getBoundingClientRect().top);
   }, [breakpointSize, response.html, svgWidth, winHeight]);
@@ -64,9 +66,6 @@ export default function SVGComponent() {
   return (
     <>
       <hr />
-      {depTags.map((tag, i) => {
-        return <div key={i}>{tag}</div>;
-      })}
       <UncontrolledReactSVGPanZoom
         ref={Viewer}
         width={winWidth}
@@ -75,7 +74,6 @@ export default function SVGComponent() {
         className="svg-display"
         style={{
           width: "100%",
-          //margin: `0 -${themeSpacingSizePx}`,
           overflow: "hidden",
           userSelect: "none",
           position: "absolute",
