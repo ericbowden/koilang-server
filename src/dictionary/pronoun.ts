@@ -1,4 +1,5 @@
 import { DefinitionType } from "./types";
+import { generateMeaning } from "./utils";
 
 const pronounMap: Record<string, Partial<DefinitionType>[]> = {
   // 1st person
@@ -209,66 +210,108 @@ const pronounMap: Record<string, Partial<DefinitionType>[]> = {
   our: [
     // inclusive
     {
-      tags: ["inclusive", "plural", "neutral", "active", "koiwrit"],
+      tags: [
+        "possesive",
+        "inclusive",
+        "plural",
+        "neutral",
+        "active",
+        "koiwrit",
+      ],
       word: "yii",
       pronunciation: "jɪ",
     },
     {
-      tags: ["inclusive", "plural", "masculine", "active", "koiwrit"],
+      tags: [
+        "possesive",
+        "inclusive",
+        "plural",
+        "masculine",
+        "active",
+        "koiwrit",
+      ],
       word: "by",
       pronunciation: "bə",
     },
     {
-      tags: ["inclusive", "plural", "feminine", "active", "koiwrit"],
+      tags: [
+        "possesive",
+        "inclusive",
+        "plural",
+        "feminine",
+        "active",
+        "koiwrit",
+      ],
       word: "iby",
       pronunciation: "ibə",
     },
 
     {
-      tags: ["inclusive", "plural", "neutral", "stative"],
+      tags: ["possesive", "inclusive", "plural", "neutral", "stative"],
       word: "yev",
       pronunciation: "jɛv",
     },
     {
-      tags: ["inclusive", "plural", "masculine", "stative"],
+      tags: ["possesive", "inclusive", "plural", "masculine", "stative"],
       word: "bu",
       pronunciation: "bu",
     },
     {
-      tags: ["inclusive", "plural", "feminine", "stative"],
+      tags: ["possesive", "inclusive", "plural", "feminine", "stative"],
       word: "ibu",
       pronunciation: "ibu",
     },
 
     // exclusive
     {
-      tags: ["exclusive", "plural", "neutral", "active", "koiwrit"],
+      tags: [
+        "possesive",
+        "exclusive",
+        "plural",
+        "neutral",
+        "active",
+        "koiwrit",
+      ],
       word: "vy",
       pronunciation: "və",
     },
     {
-      tags: ["exclusive", "plural", "masculine", "active"],
+      tags: ["possesive", "exclusive", "plural", "masculine", "active"],
       word: "ty",
       pronunciation: "tə",
     },
     {
-      tags: ["exclusive", "plural", "feminine", "active"],
+      tags: ["possesive", "exclusive", "plural", "feminine", "active"],
       word: "ity",
       pronunciation: "ɪtə",
     },
 
     {
-      tags: ["exclusive", "plural", "neutral", "stative"],
+      tags: ["possesive", "exclusive", "plural", "neutral", "stative"],
       word: "yu",
       pronunciation: "ju",
     },
     {
-      tags: ["exclusive", "plural", "masculine", "stative", "koiwrit"],
+      tags: [
+        "possesive",
+        "exclusive",
+        "plural",
+        "masculine",
+        "stative",
+        "koiwrit",
+      ],
       word: "tu",
       pronunciation: "tu",
     },
     {
-      tags: ["exclusive", "plural", "feminine", "stative", "koiwrit"],
+      tags: [
+        "possesive",
+        "exclusive",
+        "plural",
+        "feminine",
+        "stative",
+        "koiwrit",
+      ],
       word: "itu",
       pronunciation: "itu",
     },
@@ -326,15 +369,8 @@ const pronounMap: Record<string, Partial<DefinitionType>[]> = {
   theirs: [{ tags: [], word: "", pronunciation: "" }],
 } as const;
 
-// generate meaning
-Object.entries(pronounMap).forEach(([key, values]) => {
-  values.forEach((value) => {
-    const tags = value.tags?.join(", ") ?? "";
-    value.meaning = `${key} (${tags})`;
-    value.splitMeaning = [key];
-    value.splitPOS = ["PRON"];
-  });
-});
+// generate meaning for pronouns
+generateMeaning(pronounMap, "PRON");
 
 // convert to DefinitionType array
 export const pronouns = Object.values(pronounMap).flat() as DefinitionType[];

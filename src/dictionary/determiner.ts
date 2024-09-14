@@ -2,6 +2,7 @@
 // aka what the subject or the object is in a sentence
 
 import { DefinitionType } from "./types";
+import { generateMeaning } from "./utils";
 
 // plural can be determined by the noun dependency in the graph
 // plural should be determined by the noun plural
@@ -108,15 +109,8 @@ export const articleMap: Record<string, Partial<DefinitionType>[]> = {
   ],
 } as const;
 
-// generate meaning
-Object.entries(articleMap).forEach(([key, values]) => {
-  values.forEach((value) => {
-    const tags = value.tags?.join(", ") ?? "";
-    value.meaning = `${key} (${tags})`;
-    value.splitMeaning = [key];
-    value.splitPOS = ["DET"];
-  });
-});
+// generate meaning for articles
+generateMeaning(articleMap, "DET");
 
 // convert to DefinitionType array
 export const articles = Object.values(articleMap).flat() as DefinitionType[];

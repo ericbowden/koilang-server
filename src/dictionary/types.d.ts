@@ -1,3 +1,4 @@
+import { GrammarTagsType } from "./grammarTags";
 import { POSTagsKeyType } from "./posTags";
 
 interface TableEntryType {
@@ -11,37 +12,7 @@ interface TableEntryType {
 interface DefinitionType extends TableEntryType {
   splitMeaning: string[];
   splitPOS: POSTagsKeyType[];
-  tags: GrammarTags | [];
+  tags: GrammarTagsType | [];
 }
 
 type DefinitionTypeRecord = Record<POSTagsKeyType, DefinitionType[]>;
-
-type GrammarTags = (
-  | // person
-  "first"
-  | "second"
-  | "third"
-  // quantity
-  | "singular"
-  | "plural"
-  // ownership
-  | "possesive"
-  // status
-  | "animate"
-  | "inanimate"
-  // gender
-  | "masculine"
-  | "feminine"
-  | "neutral"
-  // case/verb class
-  | "koiwrit"
-  | "active"
-  | "stative"
-  // distance
-  | "near"
-  | "far"
-  | "farther"
-  // inclusion
-  | "inclusive"
-  | "exclusive"
-)[];
