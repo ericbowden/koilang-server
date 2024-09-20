@@ -42,9 +42,10 @@ function FormComponent() {
 
   const formik = useFormik({
     initialValues: {
+      "form-text": "",
       //"form-text": "I have worked on my language.",
       //"form-text": "The sun is setting on golden grains of sand",
-      "form-text": "I ate a chicken",
+      //"form-text": "I ate a chicken",
       //"form-text": "I ate a sandwhich and it was real good!",
       //"form-text": "a super quick dog jumps over the slow slow fox",
     },
