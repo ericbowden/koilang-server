@@ -15,6 +15,7 @@ import axios from "axios";
 import { Howl } from "howler";
 import { useState } from "react";
 import { DefinitionType } from "./dictionary/types";
+import TranslaterComponent from "./TranslaterComponent";
 
 // Tags we could only translate (for now)
 /* const focusedPOS: POSTagsKeyType[] = [
@@ -186,6 +187,7 @@ export default function DefinitionsComponent() {
 
   return (
     <>
+      <TranslaterComponent />
       {response.parsed.words
         // filter out pos that we don't want to show
         /* .filter((word) => {

@@ -1,7 +1,15 @@
-- add articles/detminers
-    - plural should be determined by the noun plural
+- add articles
 - add pronouns
+- add verbs
 - add tenses
 - add mood
-- to be ()
-- look and see why love doesn't show lona'en
+- add adverbs
+- to be
+
+todo
+
+- custom sorting tags label based on its location in the type
+
+Bugs
+
+- svg image cuts off the first part of the word if too long

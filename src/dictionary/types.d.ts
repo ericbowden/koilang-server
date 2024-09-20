@@ -12,7 +12,7 @@ interface TableEntryType {
 interface DefinitionType extends TableEntryType {
   splitMeaning: string[];
   splitPOS: POSTagsKeyType[];
-  tags: GrammarTagsType | [];
+  tags: GrammarTagsType;
 }
 
 type DefinitionTypeRecord = Record<POSTagsKeyType, DefinitionType[]>;

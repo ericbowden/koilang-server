@@ -8,6 +8,7 @@ export function generateMeaning(
 ) {
   Object.entries(map).forEach(([key, values]) => {
     values.forEach((value) => {
+      // eslint-disable-next-line @typescript-eslint/non-nullable-type-assertion-style
       sortTags(value.tags as GrammarTagsType);
 
       const tags = value.tags?.join(", ") ?? "";

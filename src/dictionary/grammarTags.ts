@@ -4,9 +4,6 @@ export const GrammarTags = [
   //"first",
   //"second",
   //"third",
-  // quantity
-  "singular",
-  "plural",
   // ownership
   "possesive",
   // status
@@ -27,9 +24,13 @@ export const GrammarTags = [
   "near",
   "far",
   "farther",
+  // quantity
+  "singular",
+  "plural",
 ] as const;
 
-export type GrammarTagsType = ArrayElement<typeof GrammarTags>[];
+export type GrammarTagType = ArrayElement<typeof GrammarTags>;
+export type GrammarTagsType = GrammarTagType[];
 
 type OrderMapType = Record<ArrayElement<typeof GrammarTags>, number>;
 
@@ -40,6 +41,9 @@ const orderMap = GrammarTags.reduce<OrderMapType>((map, tag, index) => {
   // eslint-disable-next-line @typescript-eslint/prefer-reduce-type-parameter
 }, {} as OrderMapType);
 
+/**
+ * Sort an array of tags based on their position in the GrammarTags array
+ */
 export function sortTags(arr: GrammarTagsType) {
   arr.sort((a, b) => orderMap[a] - orderMap[b]);
 }

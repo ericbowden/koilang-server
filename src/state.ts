@@ -1,25 +1,29 @@
 import { createContext, useContext } from "react";
 import { POSTagsKeyType } from "./dictionary/posTags";
 import { DependencyTagsKey } from "./dictionary/dependencyTags";
-import { Verbs } from "compromise/view/three";
+
+export interface ArcType {
+  dir: "left" | "right";
+  end: number;
+  label: DependencyTagsKey;
+  start: number;
+  endWord: WordType;
+}
+
+export interface WordType {
+  tag: POSTagsKeyType;
+  pos: POSTagsKeyType;
+  text: string;
+  lemma: string;
+  arcs: ArcType[];
+}
 
 export interface ParsedResponseType {
   parsed: {
-    arcs: {
-      dir: "left" | "right";
-      end: number;
-      label: DependencyTagsKey;
-      start: number;
-    }[];
-    words: {
-      tag: POSTagsKeyType;
-      pos: POSTagsKeyType;
-      text: string;
-      lemma: string;
-    }[];
+    arcs: ArcType[];
+    words: WordType[];
   };
   html: string;
-  verbData: Verbs;
 }
 
 export interface AppStateType {
