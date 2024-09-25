@@ -27,7 +27,7 @@ function translateVerb(verb: WordType) {
   // get verb
   const verbDefinitions = findMeaning(verb.lemma, "VERB");
 
-  if (verbDefinitions.length === 0) {
+  if (!verbDefinitions) {
     return <Box>Unable to translated, some words not found!</Box>;
   }
 
@@ -49,7 +49,7 @@ function translateVerb(verb: WordType) {
   const foundSubject = findDepByTag(verb, "nsubj");
   if (foundSubject) {
     // look for first pronoun that matches
-    const subject = findMeaning(foundSubject.lemma, "PRON").find((sub) => {
+    const subject = findMeaning(foundSubject.lemma, "PRON")?.find((sub) => {
       return sub.tags.includes(subjectClass);
     });
 
@@ -74,9 +74,11 @@ function translateVerb(verb: WordType) {
     }
 
     // look for first determiner that matches
-    const determiner = findMeaning(foundDeterminer.lemma, "DET").find((obj) => {
-      return searchArray.every((tag) => obj.tags.includes(tag));
-    });
+    const determiner = findMeaning(foundDeterminer.lemma, "DET")?.find(
+      (obj) => {
+        return searchArray.every((tag) => obj.tags.includes(tag));
+      },
+    );
 
     if (determiner) {
       finalPhrase = finalPhrase + " " + determiner.word;
@@ -86,10 +88,12 @@ function translateVerb(verb: WordType) {
 
   // get object
   if (foundObj) {
-    const obj = findMeaning(foundObj.lemma)[0];
+    const obj = findMeaning(foundObj.lemma);
 
-    finalPhrase = finalPhrase + " " + obj.word;
-    finalPronunciation = finalPronunciation + " " + obj.pronunciation;
+    if (obj) {
+      finalPhrase = finalPhrase + " " + obj[0].word;
+      finalPronunciation = finalPronunciation + " " + obj[0].pronunciation;
+    }
   }
 
   // todo get mood
@@ -135,7 +139,9 @@ export default function TranslaterComponent() {
         p: 2,
       }}
     >
-      {translatedSentence}
+      {translatedSentence.map((word, index) => {
+        return <Box key={index}>{word}</Box>;
+      })}
     </Typography>
   );
 }

@@ -152,13 +152,13 @@ function Definition(props: { word: Word }) {
 
   const phraseTags = !isWord ? word.pos : undefined;
 
-  const definitions = findMeaning(word.lemma, phraseTags).map((found, i) => (
+  const definitions = findMeaning(word.lemma, phraseTags)?.map((found, i) => (
     <Box key={i}>
       <Term found={found} />
     </Box>
   ));
 
-  return definitions.length > 0 ? (
+  return definitions && definitions.length > 0 ? (
     definitions
   ) : (
     <Box sx={definitionsStyle}>

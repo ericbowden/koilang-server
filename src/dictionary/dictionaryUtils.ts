@@ -106,7 +106,9 @@ console.timeEnd("convertDataTime");
 export function findMeaning(text: string, dictKey?: POSTagsKeyType) {
   const dictToUse = dictKey ? dictByPOSMap[dictKey] : dictArray;
 
-  return dictToUse.filter((item: DefinitionType) => {
+  const found = dictToUse.filter((item: DefinitionType) => {
     return item.splitMeaning.includes(text);
   });
+
+  return found.length > 0 ? found : undefined;
 }
